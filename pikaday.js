@@ -230,6 +230,13 @@
         // how many months are visible
         numberOfMonths: 1,
 
+        //time
+        showTime    : false,
+        showSeconds : false,
+        use24hour   : true,
+        minutesStep : 1,
+        seconsStep  : 1,
+
         // when numberOfMonths is used, this will help you to choose where the main calendar will be (default `left`, can be set to `right`)
         // only used for the first display or when a selected date is not visible
         mainCalendar: 'left',
