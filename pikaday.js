@@ -233,7 +233,7 @@
         //time
         showTime    : false,
         showSeconds : false,
-        use24hour   : true,
+        hours24format   : true,
         minutesStep : 1,
         seconsStep  : 1,
 
@@ -386,9 +386,43 @@
 
     renderTable = function(opts, data)
     {
+        console.log(opts)
         return '<table cellpadding="0" cellspacing="0" class="pika-table">' + renderHead(opts) + renderBody(data) + '</table>';
     },
 
+    zeroFill = function(num) {
+        return num < 10 ? '0'+num : num;
+    },
+
+    renderTimePicker = function(qnt, step, selected, cssClass) {
+        var html = ['<select class="pika-select ' + cssClass + '">'],
+            i = 0;
+            console.log(selected)
+        for (i = 0; i < qnt; i += step) {
+            html.push('<option value="'+i+'" '+(i === selected ? 'selected' : '')+'>'+zeroFill(i)+'</option>')
+        };
+
+        html.push('</select>');
+        return html.join('');
+    },
+
+    renderTime = function(self, opts) {
+        var date = self.getDate() || new Date(),
+            hour = date.getHours(),
+            min = date.getMinutes(),
+            sec = date.getSeconds(),
+            h24 = opts.hours24format,
+            hours, minutes;
+
+        console.log('renderTime', date)
+        if (!opts.showTime) {
+            return '';
+        }
+
+        hours = renderTimePicker(h24 ? 24 : 12, 1, hour - (h24 ? 0 : 12));
+        minutes = renderTimePicker(60, opts.minutesStep, date.getMinutes());
+        return hours + ' : ' + minutes;
+    },
 
     /**
      * Pikaday constructor
@@ -853,7 +887,7 @@
             }
 
             for (var c = 0; c < opts.numberOfMonths; c++) {
-                html += '<div class="pika-lendar">' + renderTitle(this, c, this.calendars[c].year, this.calendars[c].month, this.calendars[0].year) + this.render(this.calendars[c].year, this.calendars[c].month) + '</div>';
+                html += '<div class="pika-lendar">' + renderTitle(this, c, this.calendars[c].year, this.calendars[c].month, this.calendars[0].year) + this.render(this.calendars[c].year, this.calendars[c].month) + renderTime(this, opts) + '</div>';
             }
 
             this.el.innerHTML = html;
