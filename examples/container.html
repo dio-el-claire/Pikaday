@@ -18,13 +18,13 @@
     <div>
         <div class="flow-element">
             <label for="datepicker">Date:</label>
-            <input type="text" id="datepicker">
+            <input type="text" id="datepicker" value="2013-01-01">
         </div>
         <div class="flow-element">
             <div id="container"></div>
         </div>
     </div>
-
+    <button id="change">change MinDate</button>
     <h2>What is this?</h2>
 
     <p>Since version 1.0 Pikaday is a stable and battle tested date-picker. Feel free to use it however you like but please report any bugs or feature requests to the <a href="https://github.com/dbushell/Pikaday/issues">GitHub issue tracker</a>, thanks!</p>
@@ -38,11 +38,12 @@
 
     var picker = new Pikaday(
     {
-        defaultDate : new Date(2015, 0, 24, 14, 14),
+        // numberOfMonths: 2,
+        defaultDate : new Date(2015, 0, 24, 14, 28),
         setDefaultDate : true,
         field: document.getElementById('datepicker'),
         firstDay: 1,
-        minDate: new Date('2000-01-01'),
+        minDate: new Date('2001-01-01'),
         maxDate: new Date('2020-12-31'),
         yearRange: [2000, 2020],
         bound: false,
@@ -51,11 +52,17 @@
         showSeconds : true,
         minutesStep : 5,
         container: document.getElementById('container'),
+
         onSelect : function() {
             console.log(arguments, this)
         }
     });
 
+    button = document.getElementById('change');
+    button.addEventListener('click', function() {
+        console.log('click')
+        picker.setMaxDate_(new Date('2016-01-01'))
+    }, false);
     </script>
 </body>
 </html>

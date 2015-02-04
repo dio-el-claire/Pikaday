@@ -515,13 +515,31 @@
             } else if (hasClass(target, 'pika-select-year')) {
                 self.gotoYear(target.value);
             } else if (hasClass(target, 'pika-select-hours')) {
-                self._hours = target.value;
+
+                if (self._amPm === 'AM') {
+                    self._hours = parseInt(target.value);
+                } else if (self._amPm === 'PM') {
+                    self._hours = 12 + parseInt(target.value);
+                } else {
+                    self._hours = parseInt(target.value);
+                }
+
                 self._onDateTimeDidChange();
             } else if (hasClass(target, 'pika-select-minutes')) {
+
                 self._minutes = target.value;
                 self._onDateTimeDidChange();
             } else if (hasClass(target, 'pika-select-seconds')) {
                 self._seconds = target.value;
+                self._onDateTimeDidChange();
+            } else if (hasClass('picka-select-ampm')) {
+                self._amPm = target.value;
+
+                if (target.value === 'AM') {
+                    self._hours -= 12;
+                } else {
+                    self._hours += 12;
+                }
                 self._onDateTimeDidChange();
             }
         };
@@ -722,7 +740,7 @@
                 this._hours   = opts.defaultDate.getHours();
                 this._minutes = opts.defaultDate.getMinutes();
                 this._seconds = opts.defaultDate.getSeconds();
-                this._amPm    = this._hours < 12 ? 'am' : 'pm';
+                this._amPm    = opts.hours24format ? '' : this._hours < 12 ? 'AM' : 'PM';
             }
 
             return opts;
@@ -733,11 +751,27 @@
          */
         toString: function(format)
         {
-            return !isDate(this._d)
-                ? ''
-                : hasMoment
-                    ? moment(this._d).format(format || this._o.format)
-                    : this._d.toDateString() + (this._o.showTime ? ' '+zeroFill(this._hours) + ':' +zeroFill(this._minutes) + (this._o.showSeconds ? ':'+zeroFill(this._seconds) : '') : '');
+            var opts = this._o,
+                h24 = opts.hours24format,
+                timeString = '',
+                h;
+
+            if (!isDate(this._d)) {
+                return '';
+            }
+
+            if (hasMoment) {
+                return moment(this._d).format(format || opts.format);
+            }
+
+            if (this._o.showTime) {
+                h = this._hours;
+                h = zeroFill( h24 ? h : h < 12 ? h : h - 12);
+
+                timeString = ' ' + h + ':' + zeroFill(this._minutes) + (opts.showSeconds ? ':' + zeroFill(this._seconds) : '') + (h24 ? '' : ' '+this._amPm);
+            }
+
+            return this._d.toDateString() + timeString;
         },
 
         /**
@@ -921,17 +955,35 @@
         /**
          * change the minDate
          */
-        setMinDate: function(value)
+        setMinDate: function(date)
         {
-            this._o.minDate = value;
+            if (!isDate(date)) {
+                this._o.minDate = false;
+                this._o.minYear = 0;
+                this._o.minMonth = undefined;
+            } else {
+                setToStartOfDay(date);
+                this._o.minYear  = date.getFullYear();
+                this._o.minMonth = date.getMonth();
+            }
+            this.draw();
         },
 
         /**
          * change the maxDate
          */
-        setMaxDate: function(value)
+        setMaxDate: function(date)
         {
-            this._o.maxDate = value;
+            if (!isDate(date)) {
+                this._o.maxDate = false;
+                this._o.maxYear = 0;
+                this._o.maxMonth = undefined;
+            } else {
+                setToStartOfDay(date);
+                this._o.maxYear  = date.getFullYear();
+                this._o.maxMonth = date.getMonth();
+            }
+            this.draw()
         },
 
         /**
