@@ -126,13 +126,12 @@
 
     setToStartOfDay = function(date)
     {
-        if (isDate(date)) date.setHours(0,0,0,0);
+        // if (isDate(date)) date.setHours(0,0,0,0);
     },
 
     compareDates = function(a,b)
     {
-        // weak date comparison (use setToStartOfDay(date) to ensure correct result)
-        return a.getTime() === b.getTime();
+        return a.toDateString() === b.toDateString();
     },
 
     extend = function(to, from, overwrite)
@@ -386,42 +385,39 @@
 
     renderTable = function(opts, data)
     {
-        // console.log(opts)
         return '<table cellpadding="0" cellspacing="0" class="pika-table">' + renderHead(opts) + renderBody(data) + '</table>';
     },
 
-    zeroFill = function(num) {
+    zeroFill = function(num)
+    {
         return num < 10 ? '0'+num : num;
     },
 
-    renderTimePicker = function(qnt, step, selected, cssClass) {
+    renderTimePicker = function(qnt, step, selected, cssClass)
+    {
         var html = ['<select class="pika-select ' + cssClass + '">'],
             i = 0;
-        // console.log(selected)
+
         for (i = 0; i < qnt; i += step) {
-            html.push('<option value="'+i+'" '+(i === selected ? 'selected' : '')+'>'+zeroFill(i)+'</option>')
+            html.push('<option value="'+i+'" '+(i === selected ? 'selected' : '')+'>'+zeroFill(i)+'</option>');
         };
 
         html.push('</select>');
         return html.join('');
     },
 
-    renderTime = function(self, opts) {
-        var date = self.getDate() || opts.defaultDate,
-            h24  = opts.hours24format,
-            results = [],
-            hour, min, sec;
+    renderTime = function(self, opts)
+    {
+        var date        = self.getDate() || opts.defaultDate,
+            h24         = opts.hours24format,
+            results     = [],
+            minutesStep = opts.minutesStep,
+            secondsStep = opts.secondsStep,
+            hour;
+
 
         function round(num, step) {
-            var i;
-
-            if (step === 1) {
-                return num;
-            }
-
-            i = num%step;
-
-            return Math.floor(num/step)*step + (i < step/2 ? 0 : step);
+            return step === 1 ? num : Math.floor(num/step)*step + (num%step < step/2 ? 0 : step);
         }
 
         if (!opts.showTime) {
@@ -433,45 +429,23 @@
         }
 
         hour = date.getHours(),
-        min  = date.getMinutes(),
-        sec  = date.getSeconds(),
-
-        self._hours = hour;
-        self._minutes = min;
-        self._seconds = sec;
 
         results.push(renderTimePicker(h24 ? 24 : 12, 1, hour - (h24 ? 0 : 12), 'pika-select-hours'));
         results.push(' : ');
 
+        results.push(renderTimePicker(60, minutesStep, round(date.getMinutes(), minutesStep), 'pika-select-minutes'));
 
-        results.push(renderTimePicker(60, opts.minutesStep, round(min, opts.minutesStep), 'pika-select-minutes'));
         if (opts.showSeconds) {
             results.push(' : ');
-            results.push(renderTimePicker(60, opts.secondsStep, round(sec, opts.secondsStep), 'pika-select-seconds'));
+            results.push(renderTimePicker(60, secondsStep, round(date.getSeconds(), secondsStep), 'pika-select-seconds'));
         }
+
         if (!h24) {
             results.push(' ');
             results.push('<select class="pika-select picka-select-ampm"><option value="AM" '+(hour <12 ? 'selected' : '')+'>AM</option><option value="PM" '+(hour >= 12 ? 'selected' : '')+'>PM</option></select>');
         }
 
         return '<div class="pika-timepicker">'+results.join('')+'</div>';
-
-        var date = self.getDate() || new Date(),
-            hour = date.getHours(),
-            min  = date.getMinutes(),
-            sec  = date.getSeconds(),
-            h24  = opts.hours24format,
-            hours, minutes;
-
-        console.log('renderTime', self.getDate())
-        if (!opts.showTime) {
-            return '';
-        }
-
-        hours = renderTimePicker(h24 ? 24 : 12, 1, hour - (h24 ? 0 : 12));
-        minutes = renderTimePicker(60, opts.minutesStep, date.getMinutes());
-
-        return hours + ' : ' + minutes;
     },
 
     /**
@@ -488,16 +462,24 @@
                 return;
             }
             e = e || window.event;
-            var target = e.target || e.srcElement;
+            var target = e.target || e.srcElement,
+                d = self._d;
+
             if (!target) {
                 return;
             }
-            console.log(self._hours)
+
             if (!(hasClass(target, 'is-disabled') || hasClass(target.parentElement, 'is-disabled'))) {
                 if (hasClass(target, 'pika-button') && !hasClass(target, 'is-empty')) {
-                    console.log(self._hours)
-                    self.setDate(new Date(target.getAttribute('data-pika-year'), target.getAttribute('data-pika-month'), target.getAttribute('data-pika-day')));
-console.log(self._hours)
+
+                    self.setDate(new Date(
+                        target.getAttribute('data-pika-year'),
+                        target.getAttribute('data-pika-month'),
+                        target.getAttribute('data-pika-day'),
+                        d ? d.getHours() : 0,
+                        d ? d.getMinutes() : 0,
+                        d ? d.getSeconds() : 0));
+
                     if (opts.bound) {
                         sto(function() {
                             self.hide();
@@ -534,14 +516,16 @@ console.log(self._hours)
             if (!target) {
                 return;
             }
-            console.log()
+
             if (hasClass(target, 'pika-select-month')) {
                 self.gotoMonth(target.value);
-            }
-            else if (hasClass(target, 'pika-select-year')) {
+            } else if (hasClass(target, 'pika-select-year')) {
                 self.gotoYear(target.value);
             } else if (hasClass(target, 'pika-select-hours')) {
-                console.log(target.value)
+                console.log('hours', target.value)
+                self._d && self._d.setHours(target.value);
+            } else if (hasClass(target, 'pika-select-minutes')) {
+                console.log('min', target.value)
             }
         };
 
@@ -802,9 +786,10 @@ console.log(self._hours)
             }
 
             this._d = new Date(date.getTime());
-            if (!this._o.showTime) {
-                setToStartOfDay(this._d);
-            }
+            console.log('setDate', this._d)
+            // if (!this._o.showTime) {
+                // setToStartOfDay(this._d);
+            // }
 
             this.gotoDate(this._d);
 
@@ -1027,7 +1012,7 @@ console.log(self._hours)
                 before = new Date(year, month, 1).getDay(),
                 data   = [],
                 row    = [];
-            setToStartOfDay(now);
+            // setToStartOfDay(now);
             if (opts.firstDay > 0) {
                 before -= opts.firstDay;
                 if (before < 0) {
