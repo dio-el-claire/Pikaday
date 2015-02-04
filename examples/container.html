@@ -38,7 +38,8 @@
 
     var picker = new Pikaday(
     {
-        defaultDate : new Date(),
+        defaultDate : new Date(2015, 0, 24, 14, 14),
+        setDefaultDate : true,
         field: document.getElementById('datepicker'),
         firstDay: 1,
         minDate: new Date('2000-01-01'),
@@ -47,6 +48,8 @@
         bound: false,
         showTime : true,
         hours24format : false,
+        showSeconds : true,
+        minutesStep : 5,
         container: document.getElementById('container'),
         onSelect : function() {
             console.log(arguments, this)
