@@ -735,7 +735,7 @@
                     opts.yearRange = 100;
                 }
             }
-
+            // store time
             if (opts.showTime && opts.defaultDate && opts.setDefaultDate && isDate(opts.defaultDate)) {
                 this._hours   = opts.defaultDate.getHours();
                 this._minutes = opts.defaultDate.getMinutes();
@@ -846,13 +846,6 @@
             setToStartOfDay(this._d);
             this.gotoDate(this._d);
 
-            // if (this._o.field) {
-            //     this._o.field.value = this.toString();
-            //     fireEvent(this._o.field, 'change', { firedBy: this });
-            // }
-            // if (!preventOnSelect && typeof this._o.onSelect === 'function') {
-            //     this._o.onSelect.call(this, this.getDate());
-            // }
             if (!preventOnSelect) {
                 this._onDateTimeDidChange();
             }
@@ -958,11 +951,12 @@
         setMinDate: function(date)
         {
             if (!isDate(date)) {
-                this._o.minDate = false;
-                this._o.minYear = 0;
+                this._o.minDate  = false;
+                this._o.minYear  = 0;
                 this._o.minMonth = undefined;
             } else {
                 setToStartOfDay(date);
+                this._o.minDate  = date;
                 this._o.minYear  = date.getFullYear();
                 this._o.minMonth = date.getMonth();
             }
@@ -975,15 +969,16 @@
         setMaxDate: function(date)
         {
             if (!isDate(date)) {
-                this._o.maxDate = false;
-                this._o.maxYear = 0;
+                this._o.maxDate  = false;
+                this._o.maxYear  = 0;
                 this._o.maxMonth = undefined;
             } else {
                 setToStartOfDay(date);
+                this._o.maxDate  = date;
                 this._o.maxYear  = date.getFullYear();
                 this._o.maxMonth = date.getMonth();
             }
-            this.draw()
+            this.draw();
         },
 
         /**
