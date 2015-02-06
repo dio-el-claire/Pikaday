@@ -687,8 +687,10 @@
             if (!this._o) {
                 this._o = extend({}, defaults, true);
             }
-
+            // console.log(extend(defaults.i18n, options.i18, true))
             var opts = extend(this._o, options, true);
+
+            // opts.i18n = extend(defaults.i18n, options.i18n, true)
 
             opts.isRTL = !!opts.isRTL;
 
