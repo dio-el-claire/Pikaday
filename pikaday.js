@@ -233,6 +233,7 @@
 
         //time
         showTime    : false,
+        splitTileView : false,
         showSeconds : false,
         hours24format   : true,
         minutesStep : 1,
@@ -395,13 +396,17 @@
         return num < 10 ? '0'+num : num;
     },
 
+    renderOption = function(num, selected) {
+        return '<option value="' + num + '" ' + (selected ? 'selected' : '')+'>' + zeroFill(num) + '</option>';
+    },
+
     renderTimePicker = function(qnt, step, selected, cssClass)
     {
         var html = '<select class="pika-select ' + cssClass + '">',
-            i = 0;
+            i = 0, option;
 
         for (i = 0; i < qnt; i += step) {
-            html += '<option value="'+i+'" '+(i === selected ? 'selected' : '')+'>'+zeroFill(i)+'</option>';
+            html += renderOption(i, i === selected);
         };
 
         return html + '</select>';
@@ -414,7 +419,6 @@
             minutesStep = opts.minutesStep,
             secondsStep = opts.secondsStep;
 
-
         function round(num, step) {
             return step === 1 ? num : Math.floor(num/step)*step + (num%step < step/2 ? 0 : step);
         }
@@ -423,17 +427,31 @@
             return '';
         }
 
-        results = renderTimePicker(h24 ? 24 : 12, 1, self._hours - (h24 ? 0 : 12), 'pika-select-hours')
-            + ' : '
-            + renderTimePicker(60, minutesStep, round(self._minutes, minutesStep), 'pika-select-minutes');
+        if (opts.splitTimeView) {
+            addClass(self.el, 'pika-split-time');
 
-        if (opts.showSeconds) {
-            results += ' : ' + renderTimePicker(60, secondsStep, round(self._seconds, secondsStep), 'pika-select-seconds');
+            results = '<select class="pika-select pika-select-time" size="14">';
+            for (var h = 0; h < 24; h++) {
+                for (var m = 0; m < 60; m += minutesStep) {
+                    results += renderOption(zeroFill(h) + ' : ' + zeroFill(m), self._hours === h && m == round(self._minutes, minutesStep));
+                }
+            }
+            results += '</select>';
+        } else {
+            results = renderTimePicker(h24 ? 24 : 12, 1, self._hours - (h24 ? 0 : 12), 'pika-select-hours')
+                + ' : '
+                + renderTimePicker(60, minutesStep, round(self._minutes, minutesStep), 'pika-select-minutes');
+
+            if (opts.showSeconds) {
+                results += ' : ' + renderTimePicker(60, secondsStep, round(self._seconds, secondsStep), 'pika-select-seconds');
+            }
+
+            if (!h24) {
+                results += ' <select class="pika-select picka-select-ampm"><option value="AM" '+(self._hours <12 ? 'selected' : '')+'>AM</option><option value="PM" '+(self._hours >= 12 ? 'selected' : '')+'>PM</option></select>';
+            }
         }
 
-        if (!h24) {
-            results += ' <select class="pika-select picka-select-ampm"><option value="AM" '+(self._hours <12 ? 'selected' : '')+'>AM</option><option value="PM" '+(self._hours >= 12 ? 'selected' : '')+'>PM</option></select>';
-        }
+
 
         return '<div class="pika-timepicker">'+results+'</div>';
     },
@@ -472,14 +490,7 @@
                         d ? d.getMinutes() : 0,
                         d ? d.getSeconds() : 0));
 
-                    if (opts.bound) {
-                        sto(function() {
-                            self.hide();
-                            if (opts.field) {
-                                opts.field.blur();
-                            }
-                        }, 100);
-                    }
+                    self.hideAfterSelect();
                     return;
                 }
                 else if (hasClass(target, 'pika-prev')) {
@@ -489,7 +500,8 @@
                     self.nextMonth();
                 }
             }
-            if (!hasClass(target, 'pika-select')) {
+
+            if (!hasClass(target, 'pika-select') && target.tagName !== 'OPTION') {
                 if (e.preventDefault) {
                     e.preventDefault();
                 } else {
@@ -505,7 +517,7 @@
         {
             e = e || window.event;
             var target = e.target || e.srcElement,
-                hours;
+                hours, parts;
             if (!target) {
                 return;
             }
@@ -515,7 +527,6 @@
             } else if (hasClass(target, 'pika-select-year')) {
                 self.gotoYear(target.value);
             } else if (hasClass(target, 'pika-select-hours')) {
-
                 if (self._amPm === 'AM') {
                     self._hours = parseInt(target.value);
                 } else if (self._amPm === 'PM') {
@@ -526,13 +537,12 @@
 
                 self._onDateTimeDidChange();
             } else if (hasClass(target, 'pika-select-minutes')) {
-
                 self._minutes = target.value;
                 self._onDateTimeDidChange();
             } else if (hasClass(target, 'pika-select-seconds')) {
                 self._seconds = target.value;
                 self._onDateTimeDidChange();
-            } else if (hasClass('picka-select-ampm')) {
+            } else if (hasClass(target, 'picka-select-ampm')) {
                 self._amPm = target.value;
 
                 if (target.value === 'AM') {
@@ -541,6 +551,14 @@
                     self._hours += 12;
                 }
                 self._onDateTimeDidChange();
+            } else if (hasClass(target, 'pika-select-time')) {
+                parts = target.value.split(' : ');
+                self._hours = parseInt(parts[0]);
+                self._minutes = parseInt(parts[1]);
+                if (self._d) {
+                    self._onDateTimeDidChange();
+                    self.hideAfterSelect();
+                }
             }
         };
 
@@ -687,10 +705,8 @@
             if (!this._o) {
                 this._o = extend({}, defaults, true);
             }
-            // console.log(extend(defaults.i18n, options.i18, true))
-            var opts = extend(this._o, options, true);
 
-            // opts.i18n = extend(defaults.i18n, options.i18n, true)
+            var opts = extend(this._o, options, true);
 
             opts.isRTL = !!opts.isRTL;
 
@@ -737,12 +753,19 @@
                     opts.yearRange = 100;
                 }
             }
-            // store time
-            if (opts.showTime && opts.defaultDate && opts.setDefaultDate && isDate(opts.defaultDate)) {
-                this._hours   = opts.defaultDate.getHours();
-                this._minutes = opts.defaultDate.getMinutes();
-                this._seconds = opts.defaultDate.getSeconds();
-                this._amPm    = opts.hours24format ? '' : this._hours < 12 ? 'AM' : 'PM';
+            if (opts.showTime) {
+                if (opts.splitTimeView) {
+                    opts.hours24format = true;
+                    opts.showSeconds   = false;
+                }
+
+                // store time
+                if (opts.defaultDate && opts.setDefaultDate && isDate(opts.defaultDate)) {
+                    this._hours   = opts.defaultDate.getHours();
+                    this._minutes = opts.defaultDate.getMinutes();
+                    this._seconds = opts.defaultDate.getSeconds();
+                    this._amPm    = opts.hours24format ? '' : this._hours < 12 ? 'AM' : 'PM';
+                }
             }
 
             return opts;
@@ -1092,8 +1115,9 @@
                 before = new Date(year, month, 1).getDay(),
                 data   = [],
                 row    = [];
+
             setToStartOfDay(now);
-            console.log(this._d)
+
             if (opts.firstDay > 0) {
                 before -= opts.firstDay;
                 if (before < 0) {
@@ -1166,6 +1190,21 @@
                     this._o.onClose.call(this);
                 }
             }
+        },
+
+        hideAfterSelect : function() {
+            var self = this,
+                opts = self._o;
+
+            if (opts.bound) {
+                sto(function() {
+                    self.hide();
+                    if (opts.field) {
+                        opts.field.blur();
+                    }
+                }, 100);
+            }
+
         },
 
         /**

@@ -45,6 +45,12 @@
         yearRange: [2000, 2020],
         bound: true,
         container: document.getElementById('container'),
+        showTime : true,
+        splitTimeView : true,
+        minutesStep : 10,
+        onSelect : function() {
+            console.log(arguments, this)
+        },
     });
 
     </script>
