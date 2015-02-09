@@ -50,6 +50,14 @@
     <script src="../pikaday.js"></script>
     <script>
 
+    Pikaday.prototype.i18n = {
+        previousMonth : '先月',
+        nextMonth     : '来月',
+        months        : ['１月','２月','３月','４月','５月','６月','７月','８月','９月','１０月','１１月','１２月'],
+        weekdays      : ['日曜日', '月曜日','火曜日',　'水曜日', '木曜日','金曜日','土曜日'],
+        weekdaysShort : ['日', '月','火',　'水', '木','金','土']
+    }
+
     var picker = new Pikaday(
     {
         // numberOfMonths: 2,
@@ -71,7 +79,13 @@
         onSelect : function() {
             console.log(arguments, this)
         },
-        // i18n : {months : ['Январь']}
+        i18n_ : {
+                    previousMonth : '先月',
+                    nextMonth     : '来月',
+                    months        : ['１月','２月','３月','４月','５月','６月','７月','８月','９月','１０月','１１月','１２月'],
+                    weekdays      : ['日曜日', '月曜日','火曜日',　'水曜日', '木曜日','金曜日','土曜日'],
+                    weekdaysShort : ['日', '月','火',　'水', '木','金','土']
+                }
     });
 
     button = document.getElementById('change');
