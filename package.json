@@ -1,14 +1,16 @@
 {
-  "name": "pikaday",
-  "version": "1.3.0",
-  "description": "A refreshing JavaScript Datepicker — lightweight, no dependencies, modular CSS",
+  "name": "pikadaytime",
+  "version": "1.0.0",
+  "description": "Lightweight date and time picker based on http://dbushell.github.io/Pikaday",
   "keywords": [
     "datepicker",
+    "datetimepicker",
     "calendar",
-    "date"
+    "date",
+    "time"
   ],
-  "homepage": "http://dbushell.github.io/Pikaday/",
-  "bugs": "https://github.com/dbushell/Pikaday/issues",
+  "homepage": "http://dio-el-claire.github.io/PikadayTime/",
+  "bugs": "https://github.com/dio-el-claire/PikadayTime/issues",
   "licenses": [
     {
       "type": "BSD",
@@ -22,7 +24,7 @@
   "main": "pikaday.js",
   "repository": {
     "type": "git",
-    "url": "https://github.com/dbushell/Pikaday.git"
+    "url": "https://github.com/dio-el-claire/PikadayTime.git"
   },
   "optionalDependencies": {
     "moment": "2.x"

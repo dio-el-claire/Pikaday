@@ -1,11 +1,13 @@
 {
-  "name": "pikaday",
-  "version": "1.3.0",
-  "description": "A refreshing JavaScript Datepicker — lightweight, no dependencies, modular CSS",
+  "name": "pikadaytime",
+  "version": "1.0.0",
+  "description": "Lightweight date and time picker based on http://dbushell.github.io/Pikaday",
   "keywords": [
     "datepicker",
+    "datetimepicker",
     "calendar",
-    "date"
+    "date",
+    "time"
   ],
   "main": [
     "./pikaday.js",
@@ -26,9 +28,9 @@
     "BSD",
     "MIT"
   ],
-  "homepage": "http://dbushell.github.io/Pikaday/",
+  "homepage": "http://dio-el-claire.github.io/PikadayTime/",
   "repository": {
     "type": "git",
-    "url": "https://github.com/dbushell/Pikaday.git"
+    "url": "https://github.com/dio-el-claire/PikadayTime.git"
   }
 }
