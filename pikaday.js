@@ -246,15 +246,6 @@
         // Specify a DOM element to render the calendar in
         container: undefined,
 
-        // internationalization
-        i18n: {
-            previousMonth : 'Previous Month',
-            nextMonth     : 'Next Month',
-            months        : ['January','February','March','April','May','June','July','August','September','October','November','December'],
-            weekdays      : ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'],
-            weekdaysShort : ['Sun','Mon','Tue','Wed','Thu','Fri','Sat']
-        },
-
         // callback function
         onSelect: null,
         onOpen: null,
@@ -704,6 +695,7 @@
         {
             if (!this._o) {
                 this._o = extend({}, defaults, true);
+                this._o.i18n = extend(this.i18n, this._o.i18n);
             }
 
             var opts = extend(this._o, options, true);
@@ -1226,7 +1218,16 @@
             if (this.el.parentNode) {
                 this.el.parentNode.removeChild(this.el);
             }
-        }
+        },
+
+        // internationalization
+        i18n: {
+            previousMonth : 'Previous Month',
+            nextMonth     : 'Next Month',
+            months        : ['January','February','March','April','May','June','July','August','September','October','November','December'],
+            weekdays      : ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'],
+            weekdaysShort : ['Sun','Mon','Tue','Wed','Thu','Fri','Sat']
+        },
 
     };
 
