@@ -37,6 +37,23 @@ http://nicolasgallagher.com/micro-clearfix-hack/
     box-shadow: 0 5px 15px -5px rgba(0,0,0,.5);
 }
 
+.pika-single.pika-split-time {
+    padding-right: 50px;
+}
+
+.pika-single.pika-split-time .pika-timepicker {
+    position: absolute;
+    top:0;
+    right: 0;
+    bottom:0;
+    width:50px;
+    z-index: 99999;
+    border-left: 1px solid #ccc;
+    padding: 0;
+}
+
+.pika-single.pika-split-time .pika-timepicker select { width:50px; height: 100%; border:0 solid;}
+
 .pika-lendar {
     float: left;
     width: 240px;
@@ -82,8 +99,7 @@ http://nicolasgallagher.com/micro-clearfix-hack/
     padding: 0;
     width: 20px;
     height: 30px;
-    /* hide text using text-indent trick, using width value (it's enough) */
-    text-indent: 20px;
+    color: rgba(0, 0, 0, 0);
     white-space: nowrap;
     overflow: hidden;
     background-color: transparent;
@@ -201,3 +217,7 @@ http://nicolasgallagher.com/micro-clearfix-hack/
     cursor: help;
 }
 
+.pika-timepicker {
+    text-align: center;
+    padding-bottom:8px;
+}
