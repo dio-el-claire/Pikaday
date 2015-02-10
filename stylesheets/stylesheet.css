@@ -423,3 +423,10 @@ Small Device Styles
   }
 
 }
+
+
+table.pika-table { margin-bottom: 0 !important}
+
+.pika-table th { background: none; }
+.pika-table td { border:0 solid;}
+
