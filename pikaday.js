@@ -233,7 +233,7 @@
 
         //time
         showTime    : false,
-        splitTileView : false,
+        splitTimeView : false,
         showSeconds : false,
         hours24format   : true,
         minutesStep : 1,
