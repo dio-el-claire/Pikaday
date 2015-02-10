@@ -430,3 +430,17 @@ table.pika-table { margin-bottom: 0 !important}
 .pika-table th { background: none; }
 .pika-table td { border:0 solid;}
 
+p.options {
+  background: #fff;
+  margin-left: 0;
+  margin-right: 0;
+  padding:10px;
+  width:639px;
+}
+
+p.options>span {
+  display:block;
+  margin-bottom:8px;
+}
+
+
