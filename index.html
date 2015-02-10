@@ -66,7 +66,22 @@
 });
 </code></pre>
 
+<h4>Date and time picker</h4>
+<p>Split hours and minutes pickers. Minutes step is 10.</p>
 
+<p class="example">
+    <input type="text" id="split" placeholder="YYYY-MM-DD HH:mm">
+</p>
+
+<pre><code>var picker = new Pikaday({
+    field          : document.getElementById("picker"),
+    defaultDate    : new Date(),
+    setDefaultDate : true,
+    showTime       : true,
+    splitTimeView  : true,
+    minutesStep    : 10
+});
+</code></pre>
 
 <h4>Date and time picker</h4>
 <p>24 hours format with seconds. Russian localization</p>
@@ -117,7 +132,33 @@
 });
 </code></pre>
 
+<h4>Events handlers</h4>
+<p>See output in console</p>
 
+<p class="example">
+    <input type="text" id="events" placeholder="YYYY-MM-DD HH:mm">
+</p>
+
+<pre><code>var picker = new Pikaday({
+    field          : document.getElementById("picker"),
+    defaultDate    : new Date(),
+    setDefaultDate : true,
+    showTime       : true,
+    onSelect : function(date) {
+        console.log('onSelect', date, this);
+    },
+    onOpen : function() {
+        console.log('onOpen', this);
+    },
+    onClose : function() {
+        console.log('onClose', this);
+    },
+    onDraw : function() {
+        console.log('onDraw', this);
+    }
+
+});
+</code></pre>
 
 
       </section>
@@ -156,6 +197,13 @@
                     weekdaysShort : ['Вс','Пн','Вт','Ср','Чт','Пт','Сб']
                 }
             }},
+            {id : 'split', opts : {
+                defaultDate : new Date(),
+                setDefaultDate : true,
+                showTime:true,
+                splitTimeView : true,
+                minutesStep : 10}
+            },
             {id : 'datetimeJp', opts : {
                 defaultDate : new Date(),
                 setDefaultDate : true,
@@ -172,7 +220,25 @@
                     weekdays      : ['日曜日', '月曜日','火曜日',　'水曜日', '木曜日','金曜日','土曜日'],
                     weekdaysShort : ['日', '月','火',　'水', '木','金','土']
                 }
-            }}
+            }}, {id : 'events', opts : {
+                defaultDate : new Date(),
+                setDefaultDate : true,
+                showTime:true,
+                onSelect : function(date) {
+                    console.log('onSelect', date, this);
+                },
+                onOpen : function() {
+                    console.log('onOpen', this);
+                },
+                onClose : function() {
+                    console.log('onClose', this);
+                },
+                onDraw : function() {
+                    console.log('onDraw', this);
+                }
+                }
+
+            }
         ], o, id;
 
         for (var i = 0, l = opts.length; i < l; i++) {
