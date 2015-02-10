@@ -477,9 +477,9 @@
                         target.getAttribute('data-pika-year'),
                         target.getAttribute('data-pika-month'),
                         target.getAttribute('data-pika-day'),
-                        d ? d.getHours() : 0,
-                        d ? d.getMinutes() : 0,
-                        d ? d.getSeconds() : 0));
+                        self._hours,
+                        self._minutes,
+                        self._seconds));
 
                     self.hideAfterSelect();
                     return;
@@ -837,6 +837,7 @@
 
                 if (this._o.field) {
                     this._o.field.value = '';
+                    this.setTime();
                     fireEvent(this._o.field, 'change', { firedBy: this });
                 }
 
@@ -859,12 +860,26 @@
             }
 
             this._d = new Date(date.getTime());
-
+            this.setTime(this._d);
             setToStartOfDay(this._d);
             this.gotoDate(this._d);
 
             if (!preventOnSelect) {
                 this._onDateTimeDidChange();
+            }
+        },
+
+        setTime : function() {
+            var date = arguments[0], h, m, s;
+
+            if (date instanceof Date) {
+                this._hours = date.getHours();
+                this._minutes = date.getMinutes();
+                this._seconds = date.getSeconds();
+            } else {
+                this._hours = parseInt(arguments[0]) || 0;
+                this._minutes = parseInt(arguments[1]) || 0;
+                this._seconds = parseInt(arguments[2]) || 2;
             }
         },
 

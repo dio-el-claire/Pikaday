@@ -18,7 +18,8 @@
     <div>
         <div class="flow-element">
             <label for="datepicker">Date:</label>
-            <input type="text" id="datepicker">
+            <input type="text" id="datepicker"><br>
+            <button onclick="reset()">Reset date</button>
         </div>
         <div class="flow-element">
             <div id="container"></div>
@@ -38,12 +39,14 @@
 
     var picker = new Pikaday(
     {
+        defaultDate : new Date(),
+        setDefaultDate : true,
         field: document.getElementById('datepicker'),
         firstDay: 1,
         minDate: new Date('2000-01-01'),
         maxDate: new Date('2020-12-31'),
         yearRange: [2000, 2020],
-        bound: false,
+        // bound: false,
         container: document.getElementById('container'),
         showTime : true,
         splitTimeView : true,
@@ -52,6 +55,10 @@
             console.log(arguments, this)
         },
     });
+
+    function reset(argument) {
+        picker.setDate()
+    }
 
     </script>
 </body>
