@@ -49,7 +49,7 @@
 <pre><code>var picker = new Pikaday({field : document.getElementById("picker")});
 </code></pre>
 
-<h4>Date and time picker</h4>
+<h4>12 hours format date and time picker</h4>
 <p>12 hours format with initial date. Position:right</p>
 
 <p class="example">
@@ -66,7 +66,7 @@
 });
 </code></pre>
 
-<h4>Date and time picker</h4>
+<h4>Date and time picker with one select for hours and minutes</h4>
 <p>Split hours and minutes pickers. Minutes step is 10.</p>
 
 <p class="example">
@@ -83,7 +83,7 @@
 });
 </code></pre>
 
-<h4>Date and time picker</h4>
+<h4>24 hours format date and time picker</h4>
 <p>24 hours format with seconds. Russian localization</p>
 
 <p class="example">
@@ -106,7 +106,7 @@
     }
 });
 </code></pre>
-<h4>Date and time picker</h4>
+<h4>Min date and max date</h4>
 <p>24 hours format. Min date and max date. Japanese localization</p>
 
 <p class="example">
@@ -160,6 +160,75 @@
 });
 </code></pre>
 
+<h4>Datepicker options and methods</h4>
+<p>
+    See on <a href="https://github.com/dbushell/Pikaday" target="new"> Pikaday github page</a>
+</p>
+
+
+<h4>Timepicker options</h4>
+<p class="options">
+    <span>
+        <strong>showTime</strong> : [Boolean] show time picker. (default false)
+    </span>
+    <span>
+        <strong>hours24format</strong> : [Boolean] use 24 or 12 hours format. (default true (24 format))
+    </span>
+    <span>
+        <strong>showSeconds</strong> : [Boolean] show seconds picker. (default false)
+    </span>
+    <span>
+        <strong>minutesStep</strong> : [Number] Show every n minutes. (default 1)
+    </span>
+    <span>
+        <strong>secondsStep</strong> : [Number] Show every n seconds. (default 1)
+    </span>
+    <span>
+        <strong>splitTimeView</strong> : [Number] Show one time selector with splited hours and minutes. Only 24 hours format. (default false)
+    </span>
+</p>
+
+<h4>Internationalization</h4>
+<p>You can setup i18n globaly.</p>
+<pre><code>Pikaday.prototype.i18n = {
+    previousMonth : 'Предыдущий месяц',
+    nextMonth     : 'Следующий месяц',
+    months        : ['Январь','Февраль','Март','Апрель','Май','Июнь','Июль','Август','Сентябрь','Октябрь','Ноябрь','Декабрь'],
+    weekdays      : ['Воскресенье', 'Понедельник','Вторник','Среда','Четверг','Пятница','Суббота'],
+    weekdaysShort : ['Вс','Пн','Вт','Ср','Чт','Пт','Сб']
+}
+</code></pre>
+
+<p>Or pass i18n in picker constructor</p>
+
+<pre><code>var picker = new Pikaday({
+    field : document.getElementById('picker'),
+    .....
+    i18n : {
+        previousMonth : '先月',
+        nextMonth     : '来月',
+        months        : ['１月','２月','３月','４月','５月','６月','７月','８月','９月','１０月','１１月','１２月'],
+        weekdays      : ['日曜日', '月曜日','火曜日',　'水曜日', '木曜日','金曜日','土曜日'],
+        weekdaysShort : ['日', '月','火',　'水', '木','金','土']
+    }
+});
+
+</code></pre>
+
+<h4>Authors</h4>
+
+<p>
+    <strong>Pikaday</strong><br>
+    <ul>
+        <li><a href="https://github.com/dbushell">David Bushell</a></li>
+        <li><a href="https://github.com/rikkert">Ramiro Rikkert GitHub</a></li>
+    </ul>
+
+    <strong>Timepicker extension</strong><br>
+    <ul>
+        <li><a href="https://github.com/dio-el-claire">Dmitry (dio) Levashov</a></li>
+    </ul>
+</p>
 
       </section>
     </div>
