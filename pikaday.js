@@ -387,8 +387,8 @@
         return num < 10 ? '0'+num : num;
     },
 
-    renderOption = function(num, selected) {
-        return '<option value="' + num + '" ' + (selected ? 'selected' : '')+'>' + zeroFill(num) + '</option>';
+    renderOption = function(num, selected, disabled) {
+        return '<option value="' + num + '" ' + (selected && !disabled ? 'selected' : '')+'' + (disabled ? 'disabled="disabled"' : '') + '>' + zeroFill(num) + '</option>';
     },
 
     renderTimePicker = function(qnt, step, selected, cssClass)
