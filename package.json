@@ -1,6 +1,6 @@
 {
   "name": "pikadaytime",
-  "version": "1.0.0",
+  "version": "1.0.3",
   "description": "Lightweight date and time picker based on http://dbushell.github.io/Pikaday",
   "keywords": [
     "datepicker",
