@@ -408,23 +408,37 @@
         var h24         = opts.hours24format,
             results     = '',
             minutesStep = opts.minutesStep,
-            secondsStep = opts.secondsStep;
+            secondsStep = opts.secondsStep,
+            isMinDate   = isDate(self._d) && isDate(opts.minDate) && compareDates(opts.minDate, self._d);
+
+        // console.log(compareDates(opts.minDate, self._d), self._minTime)
 
         function round(num, step) {
-            return step === 1 ? num : Math.floor(num/step)*step + (num%step < step/2 ? 0 : step);
+            var round;
+
+            if (step === 1) {
+                return num;
+            }
+            round = step === 1 ? num : Math.floor(num/step)*step + (num%step < step/2 ? 0 : step);
+            return round < 60 ? round : round - step;
         }
 
         if (!opts.showTime) {
             return '';
         }
-
+        var minTime = new Date('2000-01-01 '+zeroFill(self._minTime[0])+':'+zeroFill(self._minTime[1])+':'+zeroFill(self._minTime[2]))
         if (opts.splitTimeView) {
             addClass(self.el, 'pika-split-time');
 
             results = '<select class="pika-select pika-select-time" size="14">';
             for (var h = 0; h < 24; h++) {
                 for (var m = 0; m < 60; m += minutesStep) {
-                    results += renderOption(zeroFill(h) + ' : ' + zeroFill(m), self._hours === h && m == round(self._minutes, minutesStep));
+                    // console.log(m, )
+                    var disabled = isMinDate && ((h === self._minTime[0] && m <= self._minTime[1]) || (h<self._minTime[0]))
+                    results += renderOption(
+                                    zeroFill(h) + ' : ' + zeroFill(m),
+                                    self._hours === h && m == round(self._minutes, minutesStep),
+                                    disabled);
                 }
             }
             results += '</select>';
@@ -688,6 +702,8 @@
 
         _seconds : 0,
 
+        _minTime : [0,0,0],
+
         /**
          * configure functionality
          */
@@ -717,14 +733,17 @@
 
             if (!isDate(opts.minDate)) {
                 opts.minDate = false;
+                opts.minTime = false;
             }
             if (!isDate(opts.maxDate)) {
                 opts.maxDate = false;
+                opts.maxTime = false;
             }
             if ((opts.minDate && opts.maxDate) && opts.maxDate < opts.minDate) {
-                opts.maxDate = opts.minDate = false;
+                opts.maxDate = opts.minDate = opts.minTime = opts.maxTime =false;
             }
             if (opts.minDate) {
+                this._minTime = [opts.minDate.getHours(), opts.minDate.getMinutes(), opts.minDate.getSeconds()];
                 setToStartOfDay(opts.minDate);
                 opts.minYear  = opts.minDate.getFullYear();
                 opts.minMonth = opts.minDate.getMonth();
@@ -745,19 +764,9 @@
                     opts.yearRange = 100;
                 }
             }
-            if (opts.showTime) {
-                if (opts.splitTimeView) {
-                    opts.hours24format = true;
-                    opts.showSeconds   = false;
-                }
-
-                // store time
-                if (opts.defaultDate && opts.setDefaultDate && isDate(opts.defaultDate)) {
-                    this._hours   = opts.defaultDate.getHours();
-                    this._minutes = opts.defaultDate.getMinutes();
-                    this._seconds = opts.defaultDate.getSeconds();
-                    this._amPm    = opts.hours24format ? '' : this._hours < 12 ? 'AM' : 'PM';
-                }
+            if (opts.showTime && opts.splitTimeView) {
+                opts.hours24format = true;
+                opts.showSeconds   = false;
             }
 
             return opts;
@@ -837,7 +846,7 @@
 
                 if (this._o.field) {
                     this._o.field.value = '';
-                    this.setTime();
+                    this.setTime(false, true);
                     fireEvent(this._o.field, 'change', { firedBy: this });
                 }
 
@@ -860,7 +869,7 @@
             }
 
             this._d = new Date(date.getTime());
-            this.setTime(this._d);
+            this.setTime(this._d, true);
             setToStartOfDay(this._d);
             this.gotoDate(this._d);
 
@@ -869,17 +878,19 @@
             }
         },
 
-        setTime : function() {
-            var date = arguments[0], h, m, s;
-
-            if (date instanceof Date) {
-                this._hours = date.getHours();
+        setTime : function(date, preventOnSelect) {
+            if (isDate(date)) {
+                this._hours   = date.getHours();
                 this._minutes = date.getMinutes();
                 this._seconds = date.getSeconds();
             } else {
-                this._hours = parseInt(arguments[0]) || 0;
-                this._minutes = parseInt(arguments[1]) || 0;
-                this._seconds = parseInt(arguments[2]) || 2;
+                this._hours = this._minutes = this._seconds = 0;
+            }
+
+            this._amPm = this._o.hours24format ? '' : this._hours < 12 ? 'AM' : 'PM';
+
+            if (!preventOnSelect) {
+                this._onDateTimeDidChange();
             }
         },
 
