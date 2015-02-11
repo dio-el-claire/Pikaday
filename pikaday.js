@@ -479,7 +479,7 @@
                         target.getAttribute('data-pika-day'),
                         self._hours,
                         self._minutes,
-                        self._seconds));
+                        opts.showSeconds ? self._seconds : 0));
 
                     self.hideAfterSelect();
                     return;
