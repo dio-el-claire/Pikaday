@@ -409,9 +409,12 @@
             results     = '',
             minutesStep = opts.minutesStep,
             secondsStep = opts.secondsStep,
-            isMinDate   = isDate(self._d) && isDate(opts.minDate) && compareDates(opts.minDate, self._d);
+            isDateSel   = isDate(self._d),
+            isMinDate   = isDateSel && isDate(opts.minDate) && compareDates(opts.minDate, self._d),
+            isMaxDate   = isDateSel && isDate(opts.maxDate) && compareDates(opts.maxDate, self._d),
+            date, disabled;
 
-        // console.log(compareDates(opts.minDate, self._d), self._minTime)
+        console.log(isMinDate, self._minTime)
 
         function round(num, step) {
             var round;
@@ -426,19 +429,17 @@
         if (!opts.showTime) {
             return '';
         }
-        var minTime = new Date('2000-01-01 '+zeroFill(self._minTime[0])+':'+zeroFill(self._minTime[1])+':'+zeroFill(self._minTime[2]))
+
         if (opts.splitTimeView) {
             addClass(self.el, 'pika-split-time');
 
             results = '<select class="pika-select pika-select-time" size="14">';
             for (var h = 0; h < 24; h++) {
                 for (var m = 0; m < 60; m += minutesStep) {
-                    // console.log(m, )
-                    var disabled = isMinDate && ((h === self._minTime[0] && m <= self._minTime[1]) || (h<self._minTime[0]))
-                    results += renderOption(
-                                    zeroFill(h) + ' : ' + zeroFill(m),
-                                    self._hours === h && m == round(self._minutes, minutesStep),
-                                    disabled);
+                    date = new Date();
+                    date.setHours(h, m, 0);
+                    disabled = (isMinDate && date <= self._minTime) || (isMaxDate && date >= self._maxTime);
+                    results += renderOption(zeroFill(h) + ' : ' + zeroFill(m), self._hours === h && m == round(self._minutes, minutesStep), disabled);
                 }
             }
             results += '</select>';
@@ -702,7 +703,7 @@
 
         _seconds : 0,
 
-        _minTime : [0,0,0],
+        _minTime : false,
 
         /**
          * configure functionality
@@ -735,26 +736,25 @@
             self._o.numberOfMonths = nom > 4 ? 4 : nom;
 
             if (!isDate(self._o.minDate)) {
-                self._o.minDate = false;
-                self._o.minTime = false;
+                self._o.minDate = self._o.minTime =false;
             }
             if (!isDate(self._o.maxDate)) {
-                self._o.maxDate = false;
-                self._o.maxTime = false;
+                self._o.maxDate = self._o.maxTime = false;
             }
             if ((self._o.minDate && self._o.maxDate) && self._o.maxDate < self._o.minDate) {
                 self._o.maxDate = self._o.minDate = self._o.minTime = self._o.maxTime =false;
             }
             if (self._o.minDate) {
-                this._minTime = [self._o.minDate.getHours(), self._o.minDate.getMinutes(), self._o.minDate.getSeconds()];
-                setToStartOfDay(self._o.minDate);
-                self._o.minYear  = self._o.minDate.getFullYear();
-                self._o.minMonth = self._o.minDate.getMonth();
+                self.setMinDate(self._o.minDate, true);
+                // setToStartOfDay(self._o.minDate);
+                // self._o.minYear  = self._o.minDate.getFullYear();
+                // self._o.minMonth = self._o.minDate.getMonth();
             }
             if (self._o.maxDate) {
-                setToStartOfDay(self._o.maxDate);
-                self._o.maxYear  = self._o.maxDate.getFullYear();
-                self._o.maxMonth = self._o.maxDate.getMonth();
+                self.setMaxDate(self._o.maxDate, true);
+                // setToStartOfDay(self._o.maxDate);
+                // self._o.maxYear  = self._o.maxDate.getFullYear();
+                // self._o.maxMonth = self._o.maxDate.getMonth();
             }
 
             if (isArray(self._o.yearRange)) {
@@ -994,37 +994,45 @@
         /**
          * change the minDate
          */
-        setMinDate: function(date)
+        setMinDate: function(date, preventDraw)
         {
             if (!isDate(date)) {
-                this._o.minDate  = false;
+                this._o.minDate  = this._minTime = false;
                 this._o.minYear  = 0;
                 this._o.minMonth = undefined;
             } else {
+                this._minTime = new Date();
+                this._minTime.setHours(date.getHours(), date.getMinutes(), date.getSeconds());
                 setToStartOfDay(date);
                 this._o.minDate  = date;
                 this._o.minYear  = date.getFullYear();
                 this._o.minMonth = date.getMonth();
             }
-            this.draw();
+            if (!preventDraw) {
+                this.draw();
+            }
         },
 
         /**
          * change the maxDate
          */
-        setMaxDate: function(date)
+        setMaxDate: function(date, preventDraw)
         {
             if (!isDate(date)) {
-                this._o.maxDate  = false;
+                this._o.maxDate  = self._maxTime = false;
                 this._o.maxYear  = 0;
                 this._o.maxMonth = undefined;
             } else {
+                this._maxTime = new Date();
+                this._maxTime.setHours(date.getHours(), date.getMinutes(), date.getSeconds());
                 setToStartOfDay(date);
                 this._o.maxDate  = date;
                 this._o.maxYear  = date.getFullYear();
                 this._o.maxMonth = date.getMonth();
             }
-            this.draw();
+            if (!preventDraw) {
+                this.draw();
+            }
         },
 
         /**
