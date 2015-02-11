@@ -16,8 +16,7 @@ Timepicker options
 
 Timepicker methods
 
-`setTime(new Date())` set time from Date object
-`setTime(hours, minutes, seconds)` set hours/minutes/seconds
+`setTime(new Date(), preventOnSelect)` set time from Date object
 
 Other improvement
 * redraw datepicker after minDate/maxDate did change.
