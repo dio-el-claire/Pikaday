@@ -709,67 +709,70 @@
          */
         config: function(options)
         {
-            if (!this._o) {
-                this._o = extend({}, defaults, true);
-                this._o.i18n = extend(this.i18n, this._o.i18n);
+            var self = this;
+
+            if (!self._o) {
+                self._o      = extend({}, defaults, true);
+                self._o.i18n = extend(self.i18n, self._o.i18n);
+                self._o      = extend(self._o, options, true);
             }
 
-            var opts = extend(this._o, options, true);
+            var opts = this._o;// extend(this._o, options, true);
 
-            opts.isRTL = !!opts.isRTL;
+            self._o.isRTL = !!self._o.isRTL;
 
-            opts.field = (opts.field && opts.field.nodeName) ? opts.field : null;
+            self._o.field = (self._o.field && self._o.field.nodeName) ? self._o.field : null;
 
-            opts.bound = !!(opts.bound !== undefined ? opts.field && opts.bound : opts.field);
+            self._o.bound = !!(self._o.bound !== undefined ? self._o.field && self._o.bound : self._o.field);
 
-            opts.trigger = (opts.trigger && opts.trigger.nodeName) ? opts.trigger : opts.field;
+            self._o.trigger = (self._o.trigger && self._o.trigger.nodeName) ? self._o.trigger : self._o.field;
 
-            opts.disableWeekends = !!opts.disableWeekends;
+            self._o.disableWeekends = !!self._o.disableWeekends;
 
-            opts.disableDayFn = (typeof opts.disableDayFn) == "function" ? opts.disableDayFn : null;
+            self._o.disableDayFn = (typeof self._o.disableDayFn) == "function" ? self._o.disableDayFn : null;
 
-            var nom = parseInt(opts.numberOfMonths, 10) || 1;
-            opts.numberOfMonths = nom > 4 ? 4 : nom;
+            var nom = parseInt(self._o.numberOfMonths, 10) || 1;
+            self._o.numberOfMonths = nom > 4 ? 4 : nom;
 
-            if (!isDate(opts.minDate)) {
-                opts.minDate = false;
-                opts.minTime = false;
+            if (!isDate(self._o.minDate)) {
+                self._o.minDate = false;
+                self._o.minTime = false;
             }
-            if (!isDate(opts.maxDate)) {
-                opts.maxDate = false;
-                opts.maxTime = false;
+            if (!isDate(self._o.maxDate)) {
+                self._o.maxDate = false;
+                self._o.maxTime = false;
             }
-            if ((opts.minDate && opts.maxDate) && opts.maxDate < opts.minDate) {
-                opts.maxDate = opts.minDate = opts.minTime = opts.maxTime =false;
+            if ((self._o.minDate && self._o.maxDate) && self._o.maxDate < self._o.minDate) {
+                self._o.maxDate = self._o.minDate = self._o.minTime = self._o.maxTime =false;
             }
-            if (opts.minDate) {
-                this._minTime = [opts.minDate.getHours(), opts.minDate.getMinutes(), opts.minDate.getSeconds()];
-                setToStartOfDay(opts.minDate);
-                opts.minYear  = opts.minDate.getFullYear();
-                opts.minMonth = opts.minDate.getMonth();
+            if (self._o.minDate) {
+                this._minTime = [self._o.minDate.getHours(), self._o.minDate.getMinutes(), self._o.minDate.getSeconds()];
+                setToStartOfDay(self._o.minDate);
+                self._o.minYear  = self._o.minDate.getFullYear();
+                self._o.minMonth = self._o.minDate.getMonth();
             }
-            if (opts.maxDate) {
-                setToStartOfDay(opts.maxDate);
-                opts.maxYear  = opts.maxDate.getFullYear();
-                opts.maxMonth = opts.maxDate.getMonth();
+            if (self._o.maxDate) {
+                setToStartOfDay(self._o.maxDate);
+                self._o.maxYear  = self._o.maxDate.getFullYear();
+                self._o.maxMonth = self._o.maxDate.getMonth();
             }
 
-            if (isArray(opts.yearRange)) {
+            if (isArray(self._o.yearRange)) {
                 var fallback = new Date().getFullYear() - 10;
-                opts.yearRange[0] = parseInt(opts.yearRange[0], 10) || fallback;
-                opts.yearRange[1] = parseInt(opts.yearRange[1], 10) || fallback;
+                self._o.yearRange[0] = parseInt(self._o.yearRange[0], 10) || fallback;
+                self._o.yearRange[1] = parseInt(self._o.yearRange[1], 10) || fallback;
             } else {
-                opts.yearRange = Math.abs(parseInt(opts.yearRange, 10)) || defaults.yearRange;
-                if (opts.yearRange > 100) {
-                    opts.yearRange = 100;
+                self._o.yearRange = Math.abs(parseInt(self._o.yearRange, 10)) || defaults.yearRange;
+                if (self._o.yearRange > 100) {
+                    self._o.yearRange = 100;
                 }
             }
-            if (opts.showTime && opts.splitTimeView) {
-                opts.hours24format = true;
-                opts.showSeconds   = false;
+            if (self._o.showTime && self._o.splitTimeView) {
+                self._o.hours24format = true;
+                self._o.showSeconds   = false;
             }
 
-            return opts;
+            return self._o;
         },
 
         /**
