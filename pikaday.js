@@ -232,12 +232,12 @@
         numberOfMonths: 1,
 
         //time
-        showTime    : false,
-        splitTimeView : false,
-        showSeconds : false,
-        hours24format   : true,
-        minutesStep : 1,
-        secondsStep  : 1,
+        showTime      : false,
+        splitTimeView : true,
+        showSeconds   : false,
+        hours24format : true,
+        minutesStep   : 1,
+        secondsStep   : 1,
 
         // when numberOfMonths is used, this will help you to choose where the main calendar will be (default `left`, can be set to `right`)
         // only used for the first display or when a selected date is not visible
