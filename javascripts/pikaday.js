@@ -232,12 +232,12 @@
         numberOfMonths: 1,
 
         //time
-        showTime    : false,
-        splitTileView : false,
-        showSeconds : false,
-        hours24format   : true,
-        minutesStep : 1,
-        secondsStep  : 1,
+        showTime      : false,
+        splitTimeView : true,
+        showSeconds   : false,
+        hours24format : true,
+        minutesStep   : 1,
+        secondsStep   : 1,
 
         // when numberOfMonths is used, this will help you to choose where the main calendar will be (default `left`, can be set to `right`)
         // only used for the first display or when a selected date is not visible
@@ -387,8 +387,8 @@
         return num < 10 ? '0'+num : num;
     },
 
-    renderOption = function(num, selected) {
-        return '<option value="' + num + '" ' + (selected ? 'selected' : '')+'>' + zeroFill(num) + '</option>';
+    renderOption = function(num, selected, disabled) {
+        return '<option value="' + num + '" ' + (selected && !disabled ? 'selected' : '')+'' + (disabled ? 'disabled="disabled"' : '') + '>' + zeroFill(num) + '</option>';
     },
 
     renderTimePicker = function(qnt, step, selected, cssClass)
@@ -408,10 +408,22 @@
         var h24         = opts.hours24format,
             results     = '',
             minutesStep = opts.minutesStep,
-            secondsStep = opts.secondsStep;
+            secondsStep = opts.secondsStep,
+            isDateSel   = isDate(self._d),
+            isMinDate   = isDateSel && isDate(opts.minDate) && compareDates(opts.minDate, self._d),
+            isMaxDate   = isDateSel && isDate(opts.maxDate) && compareDates(opts.maxDate, self._d),
+            date, disabled;
+
+        console.log(isMinDate, self._minTime)
 
         function round(num, step) {
-            return step === 1 ? num : Math.floor(num/step)*step + (num%step < step/2 ? 0 : step);
+            var round;
+
+            if (step === 1) {
+                return num;
+            }
+            round = step === 1 ? num : Math.floor(num/step)*step + (num%step < step/2 ? 0 : step);
+            return round < 60 ? round : round - step;
         }
 
         if (!opts.showTime) {
@@ -424,7 +436,10 @@
             results = '<select class="pika-select pika-select-time" size="14">';
             for (var h = 0; h < 24; h++) {
                 for (var m = 0; m < 60; m += minutesStep) {
-                    results += renderOption(zeroFill(h) + ' : ' + zeroFill(m), self._hours === h && m == round(self._minutes, minutesStep));
+                    date = new Date();
+                    date.setHours(h, m, 0);
+                    disabled = (isMinDate && date <= self._minTime) || (isMaxDate && date >= self._maxTime);
+                    results += renderOption(zeroFill(h) + ' : ' + zeroFill(m), self._hours === h && m == round(self._minutes, minutesStep), disabled);
                 }
             }
             results += '</select>';
@@ -477,9 +492,9 @@
                         target.getAttribute('data-pika-year'),
                         target.getAttribute('data-pika-month'),
                         target.getAttribute('data-pika-day'),
-                        d ? d.getHours() : 0,
-                        d ? d.getMinutes() : 0,
-                        d ? d.getSeconds() : 0));
+                        self._hours,
+                        self._minutes,
+                        opts.showSeconds ? self._seconds : 0));
 
                     self.hideAfterSelect();
                     return;
@@ -688,79 +703,76 @@
 
         _seconds : 0,
 
+        _minTime : false,
+
         /**
          * configure functionality
          */
         config: function(options)
         {
-            if (!this._o) {
-                this._o = extend({}, defaults, true);
-                this._o.i18n = extend(this.i18n, this._o.i18n);
+            var self = this;
+
+            if (!self._o) {
+                self._o      = extend({}, defaults, true);
+                self._o.i18n = extend(self.i18n, self._o.i18n);
+                self._o      = extend(self._o, options, true);
             }
 
-            var opts = extend(this._o, options, true);
+            var opts = this._o;// extend(this._o, options, true);
 
-            opts.isRTL = !!opts.isRTL;
+            self._o.isRTL = !!self._o.isRTL;
 
-            opts.field = (opts.field && opts.field.nodeName) ? opts.field : null;
+            self._o.field = (self._o.field && self._o.field.nodeName) ? self._o.field : null;
 
-            opts.bound = !!(opts.bound !== undefined ? opts.field && opts.bound : opts.field);
+            self._o.bound = !!(self._o.bound !== undefined ? self._o.field && self._o.bound : self._o.field);
 
-            opts.trigger = (opts.trigger && opts.trigger.nodeName) ? opts.trigger : opts.field;
+            self._o.trigger = (self._o.trigger && self._o.trigger.nodeName) ? self._o.trigger : self._o.field;
 
-            opts.disableWeekends = !!opts.disableWeekends;
+            self._o.disableWeekends = !!self._o.disableWeekends;
 
-            opts.disableDayFn = (typeof opts.disableDayFn) == "function" ? opts.disableDayFn : null;
+            self._o.disableDayFn = (typeof self._o.disableDayFn) == "function" ? self._o.disableDayFn : null;
 
-            var nom = parseInt(opts.numberOfMonths, 10) || 1;
-            opts.numberOfMonths = nom > 4 ? 4 : nom;
+            var nom = parseInt(self._o.numberOfMonths, 10) || 1;
+            self._o.numberOfMonths = nom > 4 ? 4 : nom;
 
-            if (!isDate(opts.minDate)) {
-                opts.minDate = false;
+            if (!isDate(self._o.minDate)) {
+                self._o.minDate = self._o.minTime =false;
             }
-            if (!isDate(opts.maxDate)) {
-                opts.maxDate = false;
+            if (!isDate(self._o.maxDate)) {
+                self._o.maxDate = self._o.maxTime = false;
             }
-            if ((opts.minDate && opts.maxDate) && opts.maxDate < opts.minDate) {
-                opts.maxDate = opts.minDate = false;
+            if ((self._o.minDate && self._o.maxDate) && self._o.maxDate < self._o.minDate) {
+                self._o.maxDate = self._o.minDate = self._o.minTime = self._o.maxTime =false;
             }
-            if (opts.minDate) {
-                setToStartOfDay(opts.minDate);
-                opts.minYear  = opts.minDate.getFullYear();
-                opts.minMonth = opts.minDate.getMonth();
+            if (self._o.minDate) {
+                self.setMinDate(self._o.minDate, true);
+                // setToStartOfDay(self._o.minDate);
+                // self._o.minYear  = self._o.minDate.getFullYear();
+                // self._o.minMonth = self._o.minDate.getMonth();
             }
-            if (opts.maxDate) {
-                setToStartOfDay(opts.maxDate);
-                opts.maxYear  = opts.maxDate.getFullYear();
-                opts.maxMonth = opts.maxDate.getMonth();
+            if (self._o.maxDate) {
+                self.setMaxDate(self._o.maxDate, true);
+                // setToStartOfDay(self._o.maxDate);
+                // self._o.maxYear  = self._o.maxDate.getFullYear();
+                // self._o.maxMonth = self._o.maxDate.getMonth();
             }
 
-            if (isArray(opts.yearRange)) {
+            if (isArray(self._o.yearRange)) {
                 var fallback = new Date().getFullYear() - 10;
-                opts.yearRange[0] = parseInt(opts.yearRange[0], 10) || fallback;
-                opts.yearRange[1] = parseInt(opts.yearRange[1], 10) || fallback;
+                self._o.yearRange[0] = parseInt(self._o.yearRange[0], 10) || fallback;
+                self._o.yearRange[1] = parseInt(self._o.yearRange[1], 10) || fallback;
             } else {
-                opts.yearRange = Math.abs(parseInt(opts.yearRange, 10)) || defaults.yearRange;
-                if (opts.yearRange > 100) {
-                    opts.yearRange = 100;
+                self._o.yearRange = Math.abs(parseInt(self._o.yearRange, 10)) || defaults.yearRange;
+                if (self._o.yearRange > 100) {
+                    self._o.yearRange = 100;
                 }
             }
-            if (opts.showTime) {
-                if (opts.splitTimeView) {
-                    opts.hours24format = true;
-                    opts.showSeconds   = false;
-                }
-
-                // store time
-                if (opts.defaultDate && opts.setDefaultDate && isDate(opts.defaultDate)) {
-                    this._hours   = opts.defaultDate.getHours();
-                    this._minutes = opts.defaultDate.getMinutes();
-                    this._seconds = opts.defaultDate.getSeconds();
-                    this._amPm    = opts.hours24format ? '' : this._hours < 12 ? 'AM' : 'PM';
-                }
+            if (self._o.showTime && self._o.splitTimeView) {
+                self._o.hours24format = true;
+                self._o.showSeconds   = false;
             }
 
-            return opts;
+            return self._o;
         },
 
         /**
@@ -837,6 +849,7 @@
 
                 if (this._o.field) {
                     this._o.field.value = '';
+                    this.setTime(false, true);
                     fireEvent(this._o.field, 'change', { firedBy: this });
                 }
 
@@ -859,9 +872,25 @@
             }
 
             this._d = new Date(date.getTime());
-
+            this.setTime(this._d, true);
             setToStartOfDay(this._d);
             this.gotoDate(this._d);
+
+            if (!preventOnSelect) {
+                this._onDateTimeDidChange();
+            }
+        },
+
+        setTime : function(date, preventOnSelect) {
+            if (isDate(date)) {
+                this._hours   = date.getHours();
+                this._minutes = date.getMinutes();
+                this._seconds = date.getSeconds();
+            } else {
+                this._hours = this._minutes = this._seconds = 0;
+            }
+
+            this._amPm = this._o.hours24format ? '' : this._hours < 12 ? 'AM' : 'PM';
 
             if (!preventOnSelect) {
                 this._onDateTimeDidChange();
@@ -965,37 +994,45 @@
         /**
          * change the minDate
          */
-        setMinDate: function(date)
+        setMinDate: function(date, preventDraw)
         {
             if (!isDate(date)) {
-                this._o.minDate  = false;
+                this._o.minDate  = this._minTime = false;
                 this._o.minYear  = 0;
                 this._o.minMonth = undefined;
             } else {
+                this._minTime = new Date();
+                this._minTime.setHours(date.getHours(), date.getMinutes(), date.getSeconds());
                 setToStartOfDay(date);
                 this._o.minDate  = date;
                 this._o.minYear  = date.getFullYear();
                 this._o.minMonth = date.getMonth();
             }
-            this.draw();
+            if (!preventDraw) {
+                this.draw();
+            }
         },
 
         /**
          * change the maxDate
          */
-        setMaxDate: function(date)
+        setMaxDate: function(date, preventDraw)
         {
             if (!isDate(date)) {
-                this._o.maxDate  = false;
+                this._o.maxDate  = self._maxTime = false;
                 this._o.maxYear  = 0;
                 this._o.maxMonth = undefined;
             } else {
+                this._maxTime = new Date();
+                this._maxTime.setHours(date.getHours(), date.getMinutes(), date.getSeconds());
                 setToStartOfDay(date);
                 this._o.maxDate  = date;
                 this._o.maxYear  = date.getFullYear();
                 this._o.maxMonth = date.getMonth();
             }
-            this.draw();
+            if (!preventDraw) {
+                this.draw();
+            }
         },
 
         /**
