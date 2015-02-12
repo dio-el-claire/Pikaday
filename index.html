@@ -49,8 +49,8 @@
 <pre><code>var picker = new Pikaday({field : document.getElementById("picker")});
 </code></pre>
 
-<h4>12 hours format date and time picker</h4>
-<p>12 hours format with initial date. Position:right</p>
+<h4>Default datetime picker</h4>
+<p>Initial date. Position:right</p>
 
 <p class="example">
     <input type="text" id="datetime" placeholder="YYYY-MM-DD HH:mm">
@@ -61,30 +61,13 @@
     defaultDate    : new Date(),
     setDefaultDate : true,
     showTime       : true,
-    hours24format   : false,
     position       : 'top right'
 });
 </code></pre>
 
-<h4>Date and time picker with one select for hours and minutes</h4>
-<p>Split hours and minutes pickers. Minutes step is 10.</p>
 
-<p class="example">
-    <input type="text" id="split" placeholder="YYYY-MM-DD HH:mm">
-</p>
-
-<pre><code>var picker = new Pikaday({
-    field          : document.getElementById("picker"),
-    defaultDate    : new Date(),
-    setDefaultDate : true,
-    showTime       : true,
-    splitTimeView  : true,
-    minutesStep    : 10
-});
-</code></pre>
-
-<h4>24 hours format date and time picker</h4>
-<p>24 hours format with seconds. Russian localization</p>
+<h4>Russian localization</h4>
+<p>Minutes step is 10</p>
 
 <p class="example">
     <input type="text" id="datetimeRu" placeholder="YYYY-MM-DD HH:mm">
@@ -95,7 +78,7 @@
     defaultDate    : new Date(),
     setDefaultDate : true,
     showTime       : true,
-    showSeconds    : true,
+    minutesStep    : 10,
     firstDay       : 1,
     i18n           : {
         previousMonth : 'Предыдущий месяц',
@@ -106,8 +89,9 @@
     }
 });
 </code></pre>
-<h4>Min date and max date</h4>
-<p>24 hours format. Min date and max date. Japanese localization</p>
+
+<h4>Min datetime and max datetime</h4>
+<p>Show week number. Japanese localization</p>
 
 <p class="example">
     <input type="text" id="datetimeJp" placeholder="YYYY-MM-DD HH:mm">
@@ -120,8 +104,8 @@
     showTime       : true,
     firstDay       : 1,
     showWeekNumber : true,
-    minDate        : new Date('2012-07-07'),
-    maxDate        : new Date('2016-06-12'),
+    minDate        : new Date('2012-07-07 12:00'),
+    maxDate        : new Date('2016-06-12 15:00'),
     i18n           : {
         previousMonth : '先月',
         nextMonth     : '来月',
@@ -129,6 +113,24 @@
         weekdays      : ['日曜日', '月曜日','火曜日',　'水曜日', '木曜日','金曜日','土曜日'],
         weekdaysShort : ['日', '月','火',　'水', '木','金','土']
     }
+});
+</code></pre>
+
+<h4>12 hours format</h4>
+<p>Seconds selector</p>
+
+<p class="example">
+    <input type="text" id="time12" placeholder="YYYY-MM-DD HH:mm">
+</p>
+
+<pre><code>var picker = new Pikaday({
+    field          : document.getElementById("picker"),
+    defaultDate    : new Date(),
+    setDefaultDate : true,
+    showTime       : true,
+    splitTimeView  : false,
+    showSeconds    : true,
+    hours24format  : false
 });
 </code></pre>
 
@@ -204,7 +206,7 @@
         <strong>secondsStep</strong> : [Number] Show every n seconds. (default 1)
     </span>
     <span>
-        <strong>splitTimeView</strong> : [Number] Show one time selector with splited hours and minutes. Only 24 hours format. (default false)
+        <strong>splitTimeView</strong> : [Boolean] Show one time selector with splited hours and minutes. Only 24 hours format. (default true)
     </span>
 </p>
 
@@ -269,13 +271,13 @@
                 defaultDate : new Date(),
                 setDefaultDate : true,
                 showTime:true,
-                hours24format : false,
                 position : 'top right'}
             },
             {id : 'datetimeRu', opts : {
                 defaultDate : new Date(),
                 setDefaultDate : true,
                 showTime:true,
+                minutesStep : 10,
                 showSeconds : true,
                 firstDay : 1,
                 i18n : {
@@ -286,18 +288,12 @@
                     weekdaysShort : ['Вс','Пн','Вт','Ср','Чт','Пт','Сб']
                 }
             }},
-            {id : 'split', opts : {
-                defaultDate : new Date(),
-                setDefaultDate : true,
-                showTime:true,
-                splitTimeView : true,
-                minutesStep : 10}
-            },
+
             {id : 'datetimeJp', opts : {
                 defaultDate : new Date(),
                 setDefaultDate : true,
-                minDate       : new Date('2012-07-07'),
-                maxDate       : new Date('2016-06-12'),
+                minDate       : new Date('2012-07-07 12:00'),
+                maxDate       : new Date('2016-06-12 15:00'),
                 showTime:true,
                 minutesStep : 10,
                 firstDay : 1,
@@ -309,7 +305,16 @@
                     weekdays      : ['日曜日', '月曜日','火曜日',　'水曜日', '木曜日','金曜日','土曜日'],
                     weekdaysShort : ['日', '月','火',　'水', '木','金','土']
                 }
-            }}, {id : 'events', opts : {
+            }},
+            {id : 'time12', opts : {
+                defaultDate : new Date(),
+                setDefaultDate : true,
+                showTime : true,
+                showSeconds : true,
+                hours24format : false,
+                splitTimeView : false
+            }},
+            {id : 'events', opts : {
                 defaultDate : new Date(),
                 setDefaultDate : true,
                 showTime:true,
