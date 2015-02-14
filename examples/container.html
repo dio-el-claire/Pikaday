@@ -18,7 +18,7 @@
     <div>
         <div class="flow-element">
             <label for="datepicker">Date:</label>
-            <input type="text" id="datepicker" value="2013-01-01">
+            <input type="text" id="datepicker" >
         </div>
         <div class="flow-element">
             <div id="container"></div>
@@ -61,7 +61,7 @@
     var picker = new Pikaday(
     {
         // numberOfMonths: 2,
-        defaultDate : new Date(2015, 0, 24, 14, 28),
+        // defaultDate : new Date(2015, 0, 24, 14, 28),
         setDefaultDate : true,
         defaultText : 'ASAP',
         field: document.getElementById('datepicker'),

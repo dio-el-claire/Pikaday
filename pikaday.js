@@ -673,12 +673,15 @@
 
         if (isDate(defDate)) {
             if (opts.setDefaultDate) {
-                self.setDate(defDate, true);
+                self.setDate(defDate);
             } else {
                 self.gotoDate(defDate);
             }
         } else {
             self.gotoDate(new Date());
+            if (opts.field) {
+                opts.field.value = opts.defaultText;
+            }
         }
 
         if (opts.bound) {
