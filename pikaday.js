@@ -344,8 +344,8 @@
             i = opts.yearRange[0];
             j = opts.yearRange[1] + 1;
         } else {
-            i = year - opts.yearRange;
-            j = 1 + year + opts.yearRange;
+            i = opts.minYear || year - opts.yearRange;
+            j = 1 + (opts.maxYear !== 9999 ?  opts.maxYear : year + opts.yearRange);
         }
 
         for (arr = []; i < j && i <= opts.maxYear; i++) {
@@ -470,7 +470,7 @@
         var self = this,
             opts = self.config(options);
 
-
+        console.log(opts)
 
         self._onMouseDown = function(e)
         {
@@ -756,21 +756,22 @@
             }
             if (self._o.maxDate) {
                 self.setMaxDate(self._o.maxDate, true);
+
                 // setToStartOfDay(self._o.maxDate);
                 // self._o.maxYear  = self._o.maxDate.getFullYear();
                 // self._o.maxMonth = self._o.maxDate.getMonth();
             }
 
-            if (isArray(self._o.yearRange)) {
-                var fallback = new Date().getFullYear() - 10;
-                self._o.yearRange[0] = parseInt(self._o.yearRange[0], 10) || fallback;
-                self._o.yearRange[1] = parseInt(self._o.yearRange[1], 10) || fallback;
-            } else {
-                self._o.yearRange = Math.abs(parseInt(self._o.yearRange, 10)) || defaults.yearRange;
-                if (self._o.yearRange > 100) {
-                    self._o.yearRange = 100;
-                }
-            }
+            // if (isArray(self._o.yearRange)) {
+            //     var fallback = new Date().getFullYear() - 10;
+            //     self._o.yearRange[0] = parseInt(self._o.yearRange[0], 10) || fallback;
+            //     self._o.yearRange[1] = parseInt(self._o.yearRange[1], 10) || fallback;
+            // } else {
+            //     self._o.yearRange = Math.abs(parseInt(self._o.yearRange, 10)) || defaults.yearRange;
+            //     if (self._o.yearRange > 100) {
+            //         self._o.yearRange = 100;
+            //     }
+            // }
             if (self._o.showTime && self._o.splitTimeView) {
                 self._o.hours24format = true;
                 self._o.showSeconds   = false;
