@@ -200,6 +200,8 @@
         // make the `defaultDate` the initial selected value
         setDefaultDate: false,
 
+        defaultText : '',
+
         // first day of week (0: Sunday, 1: Monday etc)
         firstDay: 0,
 
@@ -414,8 +416,6 @@
             isMaxDate   = isDateSel && isDate(opts.maxDate) && compareDates(opts.maxDate, self._d),
             date, disabled;
 
-        console.log(isMinDate, self._minTime)
-
         function round(num, step) {
             var round;
 
@@ -582,6 +582,7 @@
             else {
                 date = new Date(Date.parse(opts.field.value));
             }
+
             self.setDate(isDate(date) ? date : null);
             if (!self._v) {
                 self.show();
@@ -848,17 +849,20 @@
                 this._d = null;
 
                 if (this._o.field) {
-                    this._o.field.value = '';
-                    this.setTime(false, true);
+                    this._o.field.value = this._o.defaultText;
                     fireEvent(this._o.field, 'change', { firedBy: this });
                 }
-
+                this.setTime(false, true);
+                if (!preventOnSelect) {
+                    this._onDateTimeDidChange();
+                }
                 return this.draw();
             }
             if (typeof date === 'string') {
                 date = new Date(Date.parse(date));
             }
             if (!isDate(date)) {
+
                 return;
             }
 
@@ -899,7 +903,7 @@
 
         _onDateTimeDidChange : function() {
             if (this._o.field) {
-                this._o.field.value = this.toString();
+                this._o.field.value = isDate(this._d) ? this.toString() : this._o.defaultText;
                 fireEvent(this._o.field, 'change', { firedBy: this });
             }
             if (typeof this._o.onSelect === 'function') {
