@@ -470,8 +470,6 @@
         var self = this,
             opts = self.config(options);
 
-        console.log(opts)
-
         self._onMouseDown = function(e)
         {
             if (!self._v) {
@@ -673,7 +671,7 @@
 
         if (isDate(defDate)) {
             if (opts.setDefaultDate) {
-                self.setDate(defDate);
+                self.setDate(defDate, true);
             } else {
                 self.gotoDate(defDate);
             }
@@ -788,14 +786,16 @@
             var opts = this._o,
                 h24 = opts.hours24format,
                 timeString = '',
-                h;
+                d, h;
 
             if (!isDate(this._d)) {
                 return '';
             }
 
             if (hasMoment) {
-                return moment(this._d).format(format || opts.format);
+                d = new Date(this._d.getTime());
+                d.setHours(this._hours, this._minutes, this._seconds)
+                return moment(d).format(format || opts.format);
             }
 
             if (this._o.showTime) {
@@ -866,7 +866,9 @@
                 date = new Date(Date.parse(date));
             }
             if (!isDate(date)) {
-
+                if (this._o.field) {
+                    this._o.field.value = this._o.defaultText;
+                }
                 return;
             }
 
@@ -880,12 +882,14 @@
             }
 
             this._d = new Date(date.getTime());
-            this.setTime(this._d, true);
+            this.setTime(this._d, preventOnSelect);
             setToStartOfDay(this._d);
             this.gotoDate(this._d);
 
             if (!preventOnSelect) {
                 this._onDateTimeDidChange();
+            } else if (this._o.field) {
+                this._o.field.value = this.toString();
             }
         },
 
