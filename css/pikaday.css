@@ -224,7 +224,7 @@ http://nicolasgallagher.com/micro-clearfix-hack/
 
 .pika-timepicker select { font-size:0.8em; text-align: center}
 
-.pika-single.pika-split-time .pika-timepicker select { width:50px; height: 100%; border:0 solid;}
+.pika-single.pika-split-time .pika-timepicker select { width:50px; height: 100% !important; border:0 solid;}
 
 
 
