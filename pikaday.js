@@ -888,7 +888,8 @@
 
             if (!preventOnSelect) {
                 this._onDateTimeDidChange();
-            } else if (this._o.field) {
+            }
+            if (this._o.field) {
                 this._o.field.value = this.toString();
             }
         },
