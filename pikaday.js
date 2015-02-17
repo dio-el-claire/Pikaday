@@ -564,10 +564,22 @@
                 parts = target.value.split(' : ');
                 self._hours = parseInt(parts[0]);
                 self._minutes = parseInt(parts[1]);
-                if (self._d) {
+
+                if (!self._d) {
+                    var date = isDate(self._o.defaultDate) ? self._o.defaultDate : new Date();
+                    date.setHours(self._hours, self._minutes, 0, 0);
+                    self.setDate(date);
+                }
+
+                // if (self._d) {
                     self._onDateTimeDidChange();
                     self.hideAfterSelect();
-                }
+                // } else {
+                //     self.setDate(self._o.defaultDate || new Date())
+                //     console.log(self._o.defaultDate)
+                //     self._onDateTimeDidChange();
+                //     self.hideAfterSelect();
+                // }
             }
         };
 
@@ -887,6 +899,7 @@
             }
 
             this._d = new Date(date.getTime());
+
             this.setTime(this._d, preventOnSelect);
             setToStartOfDay(this._d);
             this.gotoDate(this._d);
@@ -904,6 +917,7 @@
                 this._hours   = date.getHours();
                 this._minutes = date.getMinutes();
                 this._seconds = date.getSeconds();
+
             } else {
                 this._hours = this._minutes = this._seconds = 0;
             }
