@@ -411,9 +411,9 @@
             results     = '',
             minutesStep = opts.minutesStep,
             secondsStep = opts.secondsStep,
-            isDateSel   = isDate(self._d),
-            isMinDate   = isDateSel && isDate(opts.minDate) && compareDates(opts.minDate, self._d),
-            isMaxDate   = isDateSel && isDate(opts.maxDate) && compareDates(opts.maxDate, self._d),
+            selDate     = new Date((isDate(self._d) ? self._d : isDate(opts.defaultDate) ? opts.defaultDate : new Date()).setHours(0,0,0,0)),
+            isMinDate   = isDate(opts.minDate) && compareDates(opts.minDate, selDate),
+            isMaxDate   = isDate(opts.maxDate) && compareDates(opts.maxDate, selDate),
             date, disabled;
 
         function round(num, step) {
@@ -437,7 +437,7 @@
             for (var h = 0; h < 24; h++) {
                 for (var m = 0; m < 60; m += minutesStep) {
                     date = new Date();
-                    date.setHours(h, m, 0);
+                    date.setHours(h, m, 0, 0);
                     disabled = (isMinDate && date <= self._minTime) || (isMaxDate && date >= self._maxTime);
                     results += renderOption(zeroFill(h) + ' : ' + zeroFill(m), self._hours === h && m == round(self._minutes, minutesStep), disabled);
                 }
