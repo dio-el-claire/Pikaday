@@ -494,8 +494,13 @@
                         self._minutes,
                         opts.showSeconds ? self._seconds : 0));
 
-                    self.hideAfterSelect();
-                    return;
+                    if (!(self._o.showTime && self._o.splitTimeView)) {
+                        self.hideAfterSelect();
+                        return;
+                    }
+
+                    // !self._o.showTime && !self._o.splitTimeView && self.hideAfterSelect();
+                    // return;
                 }
                 else if (hasClass(target, 'pika-prev')) {
                     self.prevMonth();
