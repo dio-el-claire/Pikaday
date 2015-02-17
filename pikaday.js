@@ -518,6 +518,9 @@
                     return false;
                 }
             } else {
+                if (target.selected) {
+                    fireEvent(target.parentNode, 'change');
+                }
                 self._c = true;
             }
         };
